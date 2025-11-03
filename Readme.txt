@@ -1,6 +1,4 @@
-Thanks for downloading this template!
+Aplikasi Pengadaan barang dan jasa Badan Layanan Umum (BLU) di lingkungan Universitas Pattimura Ambon.
 
-Template Name: Dewi
-Template URL: https://bootstrapmade.com/dewi-free-multi-purpose-html-template/
-Author: BootstrapMade.com
-License: https://bootstrapmade.com/license/
+E-procurement adalah
+proses pengadaan barang dan jasa yang dilakukan secara elektronik menggunakan teknologi digital dan internet. Proses ini mencakup semua tahapan pengadaan, mulai dari identifikasi kebutuhan, pencarian pemasok, pengiriman penawaran, manajemen kontrak, hingga pembayaran, dengan tujuan untuk meningkatkan efisiensi, transparansi, dan akuntabilitas serta mengurangi biaya operasional dan risiko kesalahan manual
