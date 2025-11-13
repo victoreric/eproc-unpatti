@@ -89,16 +89,31 @@ $role_id  = $_SESSION['role_id'];
                                     </td>
 
                                     <td>
-                                        <?php if (!$c['admin_verified']): ?>
-                                            <a href="verify_company.php?id=<?= $c['id'] ?>&action=approve"
-                                                class="btn btn-success btn-sm w-100 mb-1">Verifikasi</a>
+                                        <?php
+                                        // var_dump($row);
+                                        // exit;
+                                        ?>
+                                        <a href="verifikasi_document.php?company_id=<?= $c['id'] ?>"
+                                            class="btn btn-info btn-sm mb-1">
+                                            Verifikasi Dokumen
+                                        </a>
+                                        <?php
+                                        if (!$c['admin_verified']):
+                                        ?>
+                                            <!-- <a href="verify_company.php?id=<?= $c['id'] ?>&action=approve" -->
+                                            <!-- class="btn btn-success btn-sm w-100 mb-1">Verifikasi</a> -->
+                                            <a href="verifikasi_document.php?company_id=<?= $c['id'] ?>"
+                                                class="btn btn-warning btn-sm mb-1">
+                                                Verifikasi Akhir
+                                            </a>
 
                                             <a href="verify_company.php?id=<?= $c['id'] ?>&action=reject"
-                                                class="btn btn-danger btn-sm w-100">Tolak</a>
+                                                class="btn btn-danger btn-sm w-100">Tolak Keseluruhan</a>
                                         <?php else: ?>
                                             <span class="text-muted">Sudah diverifikasi</span>
                                         <?php endif; ?>
                                     </td>
+
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

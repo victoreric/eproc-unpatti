@@ -176,6 +176,8 @@ include 'menu_public.php';
                     <label>Jenis Dokumen</label>
                     <select name="doc_type" class="form-select" required>
                         <option value="">-- Pilih --</option>
+                        <option value="formulirikut" <?= $document['doc_type'] == 'formulirikut' ? 'selected' : '' ?>>Formulir Keikutsertaan</option>
+                        <option value="formulirdaftar" <?= $document['doc_type'] == 'formulirdaftar' ? 'selected' : '' ?>>Formulir Pendaftaran</option>
                         <option value="SIUP" <?= $document['doc_type'] == 'SIUP' ? 'selected' : '' ?>>SIUP</option>
                         <option value="NPWP" <?= $document['doc_type'] == 'NPWP' ? 'selected' : '' ?>>NPWP</option>
                         <option value="Akta" <?= $document['doc_type'] == 'Akta' ? 'selected' : '' ?>>Akta</option>
