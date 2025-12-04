@@ -145,126 +145,144 @@ $stmt = $pdo->prepare("
 $stmt->execute([':cid' => $company_id]);
 $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-include 'menu_public.php';
+include 'public_header.php';
+include 'public_menu.php';
 ?>
 
 
 <!-- ============================== -->
 <!--        TAMPILAN HTML           -->
 <!-- ============================== -->
-<div class="container mt-4">
-    <?php if ($success_message): ?>
-        <div class="alert alert-success alert-dismissible fade show">
-            <?= htmlspecialchars($success_message) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
 
-    <?php if ($error_message): ?>
-        <div class="alert alert-danger alert-dismissible fade show">
-            <?= htmlspecialchars($error_message) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
 
-    <div class="card shadow mb-4">
-        <div class="card-header bg-info text-white text-center">
-            <h4 class="mb-0">Upload Dokumen Legal Perusahaan</h4>
-        </div>
 
-        <div class="card-body">
-            <form method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label>Jenis Dokumen</label>
-                    <select name="doc_type" class="form-select" required>
-                        <option value="">-- Pilih Jenis Dokumen --</option>
-                        <?php foreach ($jenis_dokumen as $jenis): ?>
-                            <option value="<?= htmlspecialchars($jenis['kode_dokumen']) ?>">
-                                <?= htmlspecialchars($jenis['nama_dokumen']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+                    <!-- please start from here -->
+                    <div class="container mt-4">
+                        <?php if ($success_message): ?>
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <?= htmlspecialchars($success_message) ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <?php endif; ?>
 
-                <div class="mb-3">
-                    <label>File Dokumen</label>
-                    <input type="file" name="doc_file" class="form-control" accept="application/pdf" required>
-                    <div class="form-text text-danger">* Hanya PDF, maksimal 5 MB.</div>
-                </div>
+                        <?php if ($error_message): ?>
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <?= htmlspecialchars($error_message) ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <?php endif; ?>
 
-                <div class="mb-3">
-                    <label>Masa Berlaku (Opsional)</label>
-                    <div class="row">
-                        <div class="col">
-                            <input type="date" name="valid_from" class="form-control">
+                        <div class="card shadow mb-4">
+                            <div class="card-header bg-info text-white text-center">
+                                <h4 class="mb-0">Upload Dokumen Legal Perusahaan</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <form method="POST" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label>Jenis Dokumen</label>
+                                        <select name="doc_type" class="form-select" required>
+                                            <option value="">-- Pilih Jenis Dokumen --</option>
+                                            <?php foreach ($jenis_dokumen as $jenis): ?>
+                                                <option value="<?= htmlspecialchars($jenis['kode_dokumen']) ?>">
+                                                    <?= htmlspecialchars($jenis['nama_dokumen']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>File Dokumen</label>
+                                        <input type="file" name="doc_file" class="form-control" accept="application/pdf" required>
+                                        <div class="form-text text-danger">* Hanya PDF, maksimal 5 MB.</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Masa Berlaku (Opsional)</label>
+                                        <div class="row">
+                                            <div class="col">
+                                                <input type="date" name="valid_from" class="form-control">
+                                            </div>
+                                            <div class="col">
+                                                <input type="date" name="valid_to" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" name="upload" class="btn btn-success">Upload Dokumen</button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="col">
-                            <input type="date" name="valid_to" class="form-control">
+
+                        <div class="card shadow">
+                            <div class="card-header bg-secondary text-white text-center">
+                                <h5 class="mb-0">Daftar Dokumen Anda</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Jenis Dokumen</th>
+                                                <th>Nama File</th>
+                                                <th>Status</th>
+                                                <th>Komentar Admin</th>
+                                                <th>Masa Berlaku</th>
+                                                <th>Tanggal Upload</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (empty($documents)): ?>
+                                                <tr>
+                                                    <td colspan="8" class="text-center">Belum ada dokumen diunggah.</td>
+                                                </tr>
+                                            <?php else: ?>
+                                                <?php $no = 1;
+                                                foreach ($documents as $doc): ?>
+                                                    <tr>
+                                                        <td><?= $no++ ?></td>
+                                                        <td><?= htmlspecialchars($doc['nama_dokumen'] ?? $doc['doc_type']) ?></td>
+                                                        <td><?= htmlspecialchars($doc['file_name_orig']) ?></td>
+                                                        <td>
+                                                            <?php if ($doc['status'] === 'approved'): ?>
+                                                                <span class="badge bg-success">Approved</span>
+                                                            <?php elseif ($doc['status'] === 'rejected'): ?>
+                                                                <span class="badge bg-danger">Rejected</span>
+                                                            <?php else: ?>
+                                                                <span class="badge bg-warning text-dark">Pending</span>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td><?= nl2br(htmlspecialchars($doc['notes'] ?? '-')) ?></td>
+                                                        <td><?= ($doc['valid_from'] ?: '-') . " s/d " . ($doc['valid_to'] ?: '-') ?></td>
+                                                        <td><?= htmlspecialchars($doc['uploaded_at']) ?></td>
+                                                        <td>
+                                                            <a href="view_document.php?id=<?= $doc['id'] ?>" class="btn btn-primary btn-sm mb-1" target="_blank">Lihat</a>
+                                                            <a href="update_document.php?id=<?= $doc['id'] ?>" class="btn btn-warning btn-sm mb-1">Update</a>
+                                                            <a href="delete_document.php?id=<?= $doc['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus dokumen ini?')">Hapus</a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <!-- please end here -->
+
                 </div>
-
-                <button type="submit" name="upload" class="btn btn-success">Upload Dokumen</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="card shadow">
-        <div class="card-header bg-secondary text-white text-center">
-            <h5 class="mb-0">Daftar Dokumen Anda</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>No</th>
-                            <th>Jenis Dokumen</th>
-                            <th>Nama File</th>
-                            <th>Status</th>
-                            <th>Komentar Admin</th>
-                            <th>Masa Berlaku</th>
-                            <th>Tanggal Upload</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($documents)): ?>
-                            <tr>
-                                <td colspan="8" class="text-center">Belum ada dokumen diunggah.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php $no = 1;
-                            foreach ($documents as $doc): ?>
-                                <tr>
-                                    <td><?= $no++ ?></td>
-                                    <td><?= htmlspecialchars($doc['nama_dokumen'] ?? $doc['doc_type']) ?></td>
-                                    <td><?= htmlspecialchars($doc['file_name_orig']) ?></td>
-                                    <td>
-                                        <?php if ($doc['status'] === 'approved'): ?>
-                                            <span class="badge bg-success">Approved</span>
-                                        <?php elseif ($doc['status'] === 'rejected'): ?>
-                                            <span class="badge bg-danger">Rejected</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-warning text-dark">Pending</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?= nl2br(htmlspecialchars($doc['notes'] ?? '-')) ?></td>
-                                    <td><?= ($doc['valid_from'] ?: '-') . " s/d " . ($doc['valid_to'] ?: '-') ?></td>
-                                    <td><?= htmlspecialchars($doc['uploaded_at']) ?></td>
-                                    <td>
-                                        <a href="view_document.php?id=<?= $doc['id'] ?>" class="btn btn-primary btn-sm mb-1" target="_blank">Lihat</a>
-                                        <a href="update_document.php?id=<?= $doc['id'] ?>" class="btn btn-warning btn-sm mb-1">Update</a>
-                                        <a href="delete_document.php?id=<?= $doc['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus dokumen ini?')">Hapus</a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
-</div>
+    <!-- content-wrapper ends -->
+    <!-- CONTENT END -->
 
-<?php include 'footer.php'; ?>
+    <?php include 'public_footer.php'; ?>

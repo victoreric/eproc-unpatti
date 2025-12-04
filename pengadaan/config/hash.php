@@ -1,2 +1,2 @@
 <?php
-echo password_hash('Admin2025!', PASSWORD_BCRYPT);
+echo password_hash('sony12345', PASSWORD_BCRYPT);

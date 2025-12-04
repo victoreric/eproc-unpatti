@@ -1,18 +1,6 @@
 <?php
-// /**
-//  * admin/master_jenis_dokumen.php
-//  * CRUD Master Jenis Dokumen + DataTables (Admin Only)
-//  */
-
-// session_start();
-// require_once __DIR__ . '/../includes/auth_check.php';
-// require_once __DIR__ . '/../config/db.php';
-
-// pastikan hanya admin
-// if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
-//     http_response_code(403);
-//     die("Akses ditolak. Hanya admin yang dapat mengakses halaman ini.");
-// }
+// admin/master_jenis_dokumen.php
+// CRUD Master Jenis Dokumen + DataTables (Admin Only)
 
 include 'header&menu_admin.php';
 
@@ -20,9 +8,9 @@ $action = $_GET['action'] ?? 'list';
 $message = '';
 $error = '';
 
-// /* =======================================================
-//    HANDLE: ADD / EDIT / DELETE
-// ======================================================= */
+/* =======================================================
+   HANDLE: ADD / EDIT / DELETE
+======================================================= */
 try {
     if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $kode = trim($_POST['kode_dokumen']);
@@ -72,9 +60,9 @@ try {
     $error = "Terjadi kesalahan: " . $e->getMessage();
 }
 
-// /* =======================================================
-//    QUERY DATA (LIST / EDIT)
-// ======================================================= */
+/* =======================================================
+   QUERY DATA (LIST / EDIT)
+======================================================= */
 if ($action === 'edit' && isset($_GET['id'])) {
     $id = (int)$_GET['id'];
     $stmt = $pdo->prepare("SELECT * FROM master_jenis_dokumen WHERE id = :id");
@@ -90,10 +78,10 @@ if ($action === 'list') {
     $stmt = $pdo->query("SELECT * FROM master_jenis_dokumen ORDER BY nama_dokumen ASC");
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+// include 'menu_admin.php';
 ?>
 
-
-<!-- CONTENT -->
 <!-- =================================================== -->
 <!--                HTML + BOOTSTRAP UI                 -->
 <!-- =================================================== -->
@@ -218,5 +206,69 @@ if ($action === 'list') {
     <?php endif; ?>
 </div>
 
+<!-- =================================================== -->
+<!--       DataTables + Export (Excel, PDF, Print)       -->
+<!-- =================================================== -->
+<!-- <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+<link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#dokumenTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [{
+                    extend: 'excelHtml5',
+                    className: 'btn btn-success btn-sm',
+                    text: '<i class="bi bi-file-earmark-excel"></i> Excel'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    className: 'btn btn-danger btn-sm',
+                    text: '<i class="bi bi-file-earmark-pdf"></i> PDF',
+                    orientation: 'portrait',
+                    pageSize: 'A4'
+                },
+                {
+                    extend: 'print',
+                    className: 'btn btn-secondary btn-sm',
+                    text: '<i class="bi bi-printer"></i> Print'
+                }
+            ],
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data per halaman",
+                info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+                paginate: {
+                    first: "Awal",
+                    last: "Akhir",
+                    next: "Berikutnya",
+                    previous: "Sebelumnya"
+                },
+                zeroRecords: "Tidak ada data yang cocok"
+            }
+        });
+    });
+</script> -->
 
 <?php include 'footer_admin.php'; ?>

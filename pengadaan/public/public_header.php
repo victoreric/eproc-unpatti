@@ -1,3 +1,28 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['role_id'] != 3) {
+    header('Location: index.php');
+    exit;
+}
+
+require_once __DIR__ . '/../config/db.php';
+
+// Ambil notifikasi untuk perusahaan yang login
+$notif_stmt = $pdo->prepare("
+    SELECT id, type, message, is_read, created_at, section 
+    FROM notifications 
+    WHERE user_id = ? 
+    ORDER BY created_at DESC 
+    LIMIT 10
+");
+$notif_stmt->execute([$_SESSION['user_id']]);
+$notifications = $notif_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +30,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Landingpages</title>
+    <title>Eproc Unpatti</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css">
@@ -24,12 +49,11 @@
         <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
             <div class="navbar-brand-wrapper d-flex justify-content-center">
                 <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
-                    <a class="navbar-brand brand-logo" href="index.php"><img src="assets/images/logo.svg"
+                    <a class="navbar-brand brand-logo" href="dashboard.php">Eproc Unpatti</a>
+                    <a class="navbar-brand brand-logo-white" href="dashboard.php"><img src="assets/images/unpatti_icon_2.png"
                             alt="logo" /></a>
-                    <a class="navbar-brand brand-logo-white" href="index.php"><img src="assets/images/logo-white.svg"
-                            alt="logo" /></a>
-                    <a class="navbar-brand brand-logo-mini" href="index.php"><img src="assets/images/logo-mini.svg"
-                            alt="logo" /></a>
+                    <a class="navbar-brand brand-logo-mini" href="dashboard.php"><img src="assets/images/unpatti_icon_2.png"
+                            alt="logo" /> </a>
                     <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
                         <span class="mdi mdi-sort-variant"></span>
                     </button>
@@ -54,11 +78,15 @@
                         <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
                             id="messageDropdown" href="#" data-bs-toggle="dropdown">
                             <i class="mdi mdi-message-text mx-0"></i>
-                            <span class="count"></span>
+                            <!-- <span class="count"></span> -->
+                            <span class="count">
+                                <?= count(array_filter($notifications, fn($n) => $n['is_read'] == 0)) ?>
+                            </span>
+
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
                             <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
-                            <a class="dropdown-item preview-item">
+                            <!-- <a class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
                                     <img src="assets/images/faces/face4.jpg" alt="image" class="profile-pic">
                                 </div>
@@ -93,7 +121,7 @@
                                         Upcoming board meeting
                                     </p>
                                 </div>
-                            </a>
+                            </a> -->
                         </div>
                     </li>
                     <li class="nav-item dropdown me-4">
@@ -104,8 +132,37 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
                             aria-labelledby="notificationDropdown">
-                            <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
-                            <a class="dropdown-item preview-item">
+                            <!-- <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p> -->
+
+                            <?php if (empty($notifications)): ?>
+                                <div class="dropdown-item text-center text-muted small">
+                                    Tidak ada notifikasi
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($notifications as $n): ?>
+                                    <a class="dropdown-item preview-item"
+                                        href="view_notification.php?id=<?= $n['id'] ?>&section=<?= urlencode($n['section']) ?>">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon 
+                    <?= $n['is_read'] ? 'bg-secondary' : 'bg-info' ?>">
+                                                <i class="mdi mdi-information mx-0"></i>
+                                            </div>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <h6 class="preview-subject font-weight-normal">
+                                                <?= htmlspecialchars($n['message']) ?>
+                                            </h6>
+                                            <p class="font-weight-light small-text mb-0 text-muted">
+                                                <?= date('d M Y H:i', strtotime($n['created_at'])) ?>
+                                            </p>
+                                        </div>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+
+
+
+                            <!-- <a class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
                                     <div class="preview-icon bg-success">
                                         <i class="mdi mdi-information mx-0"></i>
@@ -143,29 +200,32 @@
                                         2 days ago
                                     </p>
                                 </div>
-                            </a>
+                            </a> -->
                         </div>
                     </li>
                     <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-                            <img src="assets/images/faces/face5.jpg" alt="profile" />
-                            <span class="nav-profile-name">Louis Barnett</span>
+                            <!-- <img src="assets/images/faces/face5.jpg" alt="profile" /> -->
+                            <span class="nav-profile-name"><?= htmlspecialchars($_SESSION['username']) ?></span>
+                            <!-- <span class="nav-profile-name">Louis Barnett</span> -->
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
                             <a class="dropdown-item">
                                 <i class="mdi mdi-cog text-primary"></i>
                                 Settings
                             </a>
-                            <a class="dropdown-item">
+                            <a href='logout.php' class="dropdown-item">
                                 <i class="mdi mdi-logout text-primary"></i>
                                 Logout
                             </a>
                         </div>
                     </li>
                     <li class="nav-item nav-settings d-none d-lg-flex">
-                        <a class="nav-link" href="#">
+                        <!-- <a class="nav-link" href="#">
                             <i class="mdi mdi-apps"></i>
-                        </a>
+                        </a> -->
+                        <a class="navbar-brand brand-logo-mini" href="dashboard.php"><img src="assets/images/unpatti_icon_2.png"
+                                alt="logo" /></a>
                     </li>
                 </ul>
                 <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"

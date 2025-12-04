@@ -2,12 +2,17 @@
  CREATE BY : VICTOR ERIC -->
 
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// MULAI SESSION HANYA SEKALI
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../config/db.php';
 
-if (!isset($_SESSION)) {
-    session_start();
-}
 
 // Jika bukan admin, redirect
 if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
@@ -16,12 +21,13 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
 }
 
 $username = $_SESSION['username'];
+$role_id  = $_SESSION['role_id'];
 
 // Cek role admin (Superadmin = 1)
-if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
-    header("Location: index.php");
-    exit;
-}
+// if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
+//     header("Location: index.php");
+//     exit;
+// }
 
 $username = $_SESSION['username'];
 $role_id  = $_SESSION['role_id'];
@@ -51,6 +57,16 @@ switch ($role_id) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Datatables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+
 </head>
 
 <body class="bg-light">
@@ -81,7 +97,9 @@ switch ($role_id) {
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="list_perusahaan.php">Daftar perusahaan</a></li>
-                                <!-- <li><a class="dropdown-item" href="verifikasi_document.php">Verifikasi Dokumen</a></li> -->
+
+                                <!-- <li><a class="dropdown-item" href="verifikasi_company_identitas.php">Verifikasi identitas</a></li> -->
+
                             </ul>
                         </li>
 
@@ -106,12 +124,38 @@ switch ($role_id) {
                                     User Management
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="master_users.php">Daftar User</a></li>
+                                    <li><a class="dropdown-item" href="master_user.php">Daftar User</a></li>
                                     <!-- <li><a class="dropdown-item" href="create_user.php">Tambah User</a></li> -->
                                     <li><a class="dropdown-item" href="master_jenis_dokumen.php">Jenis Dokumen User</a></li>
                                 </ul>
                             </li>
                         <?php endif; ?>
+
+                        <!-- notify -->
+                        <?php
+                        // $notif_count = 0;
+
+                        // $result = $dsn->query("SELECT COUNT(*) AS total FROM notifications WHERE is_read = 0");
+                        // if ($row = $result->fetch_assoc()) {
+                        //     $notif_count = $row['total'];
+                        // }
+                        $notif_count = 0;
+
+                        $stmt = $pdo->query("SELECT COUNT(*) AS total FROM notifications WHERE is_read = 0");
+                        $row = $stmt->fetch();
+                        $notif_count = $row['total'] ?? 0;
+
+                        ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="notifications.php">
+                                🔔 Notifikasi
+                                <?php if ($notif_count > 0): ?>
+                                    <span style="background:red;color:white;padding:3px 7px;border-radius:50%;">
+                                        <?= $notif_count ?>
+                                    </span>
+                                <?php endif; ?>
+                            </a>
+                        </li>
 
                     <?php endif; ?>
 
